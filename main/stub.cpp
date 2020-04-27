@@ -38,22 +38,12 @@ bool spec_on = 1;
 bool texture_on = 0;
 bool diffuse_on = 1;
 typedef struct point{
-	float x;
-	float y;
-	float z;
-	float norm[3]; //x, y, z
-	float u;
-	float v;
+	vector<float> xyz = vector<float>(3, 0);
+	vector<float> norm = vector<float>(3, 0); //x, y, z
+	vector<float> uv = vector<float>(2, 0);
+	
 	point()
-    : x(0)
-    , y(0)
-    , z(0)
     {}
-  point(float X, float Y, float Z)
-  : x(X)
-  , y(Y)
-  , z(Z)
-  {}
 } point;
 
 const int triNum = 3;
@@ -65,9 +55,7 @@ typedef struct tri{
 } tri;
 
 int size;
-int ySteps = 20, thetaSteps = 30;
-float ptX[4] = {40, 60, 20, 40};
-float ptY[4] = {-40, -10, 20, 50};
+int ySteps = 2, thetaSteps = 2;
 
 vector<point*> curvePoint;
 vector< vector<point*> > surface;
@@ -75,97 +63,11 @@ vector<tri*> tris;
 
 int pointCount;
 
-void drawCubicBezier(float* ptX, float* ptY, int rows) {
-	//replace above line with your code
-	float x = (float)ptX[0] / 100, y = (float)ptY[0] / 100;
-	float t = 0;
-	int i = 0;
-	while(t <= 1){
-		curvePoint[i] = new point();
-		curvePoint[i]->x = x; curvePoint[i]->y = y; curvePoint[i]->z = 0;
-		//calculate normal
-		float mag = sqrt(
-							pow(
-								3 * pow(1 - t, 2)* (ptX[1] - ptX[0]) + 
-								6 * (1 - t) * t * (ptX[2] - ptX[1]) +
-								3 * pow(t, 2) * (ptX[3] - ptX[2]), 2
-							)
-							+
-							pow(
-								3 * pow(1 - t, 2)* (ptY[1] - ptY[0]) + 
-								6 * (1 - t) * t * (ptY[2] - ptY[1]) +
-								3 * pow(t, 2) * (ptY[3] - ptY[2]), 2
-							)
-						);
-			//calculate derivatives and normalize 
-			//they're flipped and dy is negative to make normal instead of tangent
-		float dy = -(3 * pow(1 - t, 2)* (ptX[1] - ptX[0]) + 
-								6 * (1 - t) * t * (ptX[2] - ptX[1]) +
-								3 * pow(t, 2) * (ptX[3] - ptX[2])) / mag;
-		float dx = (3 * pow(1 - t, 2)* (ptY[1] - ptY[0]) + 
-								6 * (1 - t) * t * (ptY[2] - ptY[1]) +
-								3 * pow(t, 2) * (ptY[3] - ptY[2])) / mag;
-		float tStep = 1.0 / rows;
-		t += tStep;
-		curvePoint[i]->norm[0] = dx;
-		curvePoint[i]->norm[1] = dy; 
-		curvePoint[i]->norm[2] = 0;
-		x = (pow(1 - t, 3)*ptX[0] + 
-			3 * pow(1 - t, 2) * t * ptX[1] +
-			3 * (1 - t) * pow(t, 2) * ptX[2] + 
-			+ pow(t, 3) * ptX[3]) / 100;
-		y = (pow(1 - t, 3)*ptY[0] + 
-			3 * pow(1 - t, 2) * t * ptY[1] +
-			3 * (1 - t) * pow(t, 2) * ptY[2] + 
-			+ pow(t, 3) * ptY[3]) / 100;
-		/*if(runs == 0){
-			printf("%f %f %f %d %f \n", t, x, y, i, curvePoint[i]->x);
-		}*/
-		i++;/*
-		if(runs == 0){
-			for(int j = 0; j < curvePoint.size(); j++){
-			printf("Bezier \n");
-			printf("%f %d\n",curvePoint[j]->x, j);
-			}
-		}*/
-	}
-	//printf("\nerror not bezier\n"); 
-}
-
-//rows must equal rows of curve
-void surfaceOfRotation(int rows, int cols){
-	//rotate points around in circle
-	for(int i = 0; i < rows; i++){
-		
-		float d = 0 ;
-		for(int j = 0; j < cols; j++){
-			//add points to surface
-			//change the x and z
-			//start now
-			surface[i][j] = new point();
-			surface[i][j]->x = cos(d) * curvePoint[i]->x;
-			surface[i][j]->y = curvePoint[i]->y;
-			surface[i][j]->z = sin(d) * curvePoint[i]->x;
-			surface[i][j]->norm[0] = cos(d) * curvePoint[i]->norm[0];
-			surface[i][j]->norm[1] = curvePoint[i]->norm[1];
-			surface[i][j]->norm[2] = sin(d) * curvePoint[i]->norm[0];
-			surface[i][j]->u = (float)j / cols;
-			surface[i][j]->v = (float)i / rows;
-			d += (float)2 * M_PI / cols;
-			printf("%f %f %f %d\n", surface[i][j]->norm[0], surface[i][j]->norm[1], surface[i][j]->norm[2], i);
-			//printf("%f %f \n", surface[i][j]->u, surface[i][j]->v);
-		}
-		//if(i == rows) printf("\nerror not SOR\n");
-	}
-	
-	//printf("\nerror not SOR\n"); 
-}
-
 //make list of tris
 void makeTris (int rows, int cols){
 	//go in circle, then down one row
 	for(int i = 0; i < rows - 1; i++){
-		for(int j = 0; j < cols; j++){
+		for(int j = 0; j < cols - 1; j++){
 			int currTri = (i * (cols) + j) * 2;
 			tris[currTri] = new tri();
 			tris[currTri + 1] = new tri();
@@ -180,17 +82,37 @@ void makeTris (int rows, int cols){
 	}
 	//printf("\nerror not makeTris\n"); 
 }
+
+//draw rectangle
+//makes rectangle placed in middle of coordinate system
+void drawRectangle(float width, float height){
+	float halfwidth = width / 2;
+	float halfheight = height / 2;
+	surface[0][0]->xyz[0] = halfwidth;
+	surface[0][0]->xyz[1] = halfheight;
+	surface[0][0]->xyz[2] = 0;
+	surface[0][1]->xyz[0] = -halfwidth;
+	surface[0][1]->xyz[1] = halfheight;
+	surface[0][1]->xyz[2] = 0;
+	surface[1][0]->xyz[0] = halfwidth;
+	surface[1][0]->xyz[1] = -halfheight;
+	surface[1][0]->xyz[2] = 0;
+	surface[1][1]->xyz[0] = -halfwidth;
+	surface[1][1]->xyz[1] = -halfheight;
+	surface[1][1]->xyz[2] = 0;
+}
 //draw tris of surface
 //rows is num of vertex rows
 //cols is num of vertex cols
 void drawSurfaceTris(int rows, int cols){
-	const int numTris = (rows - 1) * (cols) * 2;
+	const int numTris = 2;
 	tris = vector<tri*>(numTris);
-	curvePoint = vector<point*> (rows);
 	surface = vector< vector<point*> >(rows, vector<point*>(cols));
+	//make surface
+	float width = 400;
+	float height = 400;
+	drawRectangle(width, height);
 	//printf("\nerror not drawingSurface\n");
-	drawCubicBezier(ptX, ptY, rows);
-	surfaceOfRotation(rows, cols);
 	makeTris (rows, cols);
 	/*
 	if(runs == 0){
@@ -207,24 +129,20 @@ void drawSurfaceTris(int rows, int cols){
 void loadSurfaceOfRevolution() 
 {
 /*------------------------------CREATE GEOMETRY-------------------------------*/
-	
 	drawSurfaceTris(ySteps, thetaSteps);
 	printf("did we make it here\n");
-	size = (ySteps - 1) * (thetaSteps) * 2;
-	int numElems = 3 + 3 + 2;
+	size = 2;
+	int numElems = 3 + 2;
 	//int numAttribs = 2;
 	GLfloat *vp = new GLfloat[size * 3 * (numElems)];    // array of vertex points and normals
 	//GLfloat *vn = new GLfloat[size * 9 * numAttribs];    // array of vertex normals
 	for(int i = 0; i < size; i++){
 		for(int j = 0; j < 3; j++){
-			vp[i * 24 + j * 8] = tris[i]->v[j]->x;
-			vp[i * 24 + j * 8 + 1] = tris[i]->v[j]->y;
-			vp[i * 24 + j * 8 + 2] = tris[i]->v[j]->z;
-			vp[i * 24 + j * 8 + 3] = tris[i]->v[j]->norm[0];
-			vp[i * 24 + j * 8 + 4] = tris[i]->v[j]->norm[1];
-			vp[i * 24 + j * 8 + 5] = tris[i]->v[j]->norm[2];
-			vp[i * 24 + j * 8 + 6] = tris[i]->v[j]->u;
-			vp[i * 24 + j * 8 + 7] = tris[i]->v[j]->v;
+			vp[i * 15 + j * 5] = tris[i]->v[j]->xyz[0];
+			vp[i * 15 + j * 5 + 1] = tris[i]->v[j]->xyz[1];
+			vp[i * 15 + j * 5 + 2] = tris[i]->v[j]->xyz[2];
+			vp[i * 15 + j * 5 + 3] = tris[i]->v[j]->uv[0];
+			vp[i * 15 + j * 5 + 4] = tris[i]->v[j]->uv[1];
 			//printf("%f %f %f :: %f %f %f \n", vp[i * 9 + j * 6], vp[i * 9 + j * 6 + 1], vp[i * 9 + j * 6 + 2] , vp[i * 9 + j * 6 + 3], vp[i * 9 + j * 6 + 4], vp[i * 9 + j * 6 + 5]);
 		}
 	}
@@ -268,19 +186,19 @@ void loadSurfaceOfRevolution()
 	GLuint points_vbo;
 	glGenBuffers(1, &points_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, size * 3 * (3 + 3 + 2) * sizeof (float), vp, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * 3 * (3 + 2) * sizeof (float), vp, GL_STATIC_DRAW);
 	//position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (numElems) * 
 	sizeof(GLfloat), NULL);
-
+/*
 	//normals
 	// Tell OpenGL how to locate the second attribute (texture coordinates) inside the buffer
 	
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (numElems) * 
 	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
-	
+*/	
 	// VBO -- normals -- needed for shading calcuations
 	// ADD CODE TO POPULATE AND LOAD PER-VERTEX SURFACE NORMALS  
 	// [HINT] Vertex normals are organized in same order as that for vertex coordinates
@@ -291,7 +209,7 @@ void loadSurfaceOfRevolution()
 	// [HINT] there are two texture coordinates instead of three vertex coordinates for each vertex
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat),(void*)(6 * sizeof(GLfloat)));
+	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
 }
 
 
@@ -325,7 +243,7 @@ void loadUniforms(GLuint shader_programme)
 void drawSurfaceOfRevolution()
 {
 	// MODIFY THIS LINE OF CODE APPRORIATELY FOR YOUR SURFACE OF REVOLUTION
-	glDrawArrays(GL_TRIANGLES, 0, (ySteps - 1) * (thetaSteps) * 2 * 3 * (3 + 3 + 2));
+	glDrawArrays(GL_TRIANGLES, 0, 2 * 3 * (3 + 2));
 }
 	
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods)

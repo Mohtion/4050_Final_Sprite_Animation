@@ -18,6 +18,8 @@
 
 #include <math.h>
 #include <time.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <GL/glew.h>       // Include GLEW (or new version of GL if on Windows).
 #include <GLFW/glfw3.h>    // GLFW helper library.
@@ -34,7 +36,7 @@
 // The view and proj matrices below make-up the camera position, orientation, fov, etc.
 // The model matrices moves your surface of revolution to the world coordinate system
 extern mat4 view_mat;
-extern mat4 proj_mat;
+glm::mat4 proj_mat;
 extern mat4 model_mat;
 
 // the vector below indicates camra placement. 
@@ -117,7 +119,7 @@ int main (int argc, char *argv[]) {
 	float far = 1000.0f; 
 	float fovy = 35.0f;  // vertical field of view, horiz calculated for aspect
 	float aspect = (float)g_gl_width / (float)g_gl_height;      // aspect ratio
-	proj_mat = perspective (fovy, aspect, near, far);
+	proj_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
 
 	mat4 T = translate (
 		identity_mat4 (), vec3 (-cam_pos.v[0], -cam_pos.v[1], -cam_pos.v[2])
@@ -175,7 +177,7 @@ int main (int argc, char *argv[]) {
 		glfwPollEvents ();
 
 		aspect = (float)g_gl_width / (float)g_gl_height; // aspect ratio
-		proj_mat = perspective (fovy, aspect, near, far);
+		proj_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);//perspective (fovy, aspect, near, far);
 	  
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers (g_window);
