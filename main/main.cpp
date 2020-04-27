@@ -28,6 +28,7 @@
 #include "gl_utils.h"      // Anton's opengl functions and small utilities like logs
 #include "obj_parser.h"    // Anton's little Wavefront .obj mesh loader
 
+#include "sprite_renderer.h"
 #include "stb_image.h"     // Sean Barrett's image loader with Anton's load_texture()
 
 #define _USE_MATH_DEFINES
@@ -37,7 +38,7 @@
 // The model matrices moves your surface of revolution to the world coordinate system
 extern mat4 view_mat;
 extern glm::mat4 proj_mat;
-extern mat4 model_mat;
+extern glm::mat4 model_mat;
 
 // the vector below indicates camra placement. 
 //It looks at (0,0,0) with (0,1,0) as the up-vector
@@ -119,20 +120,20 @@ int main (int argc, char *argv[]) {
 	float far = 1000.0f; 
 	float fovy = 35.0f;  // vertical field of view, horiz calculated for aspect
 	float aspect = (float)g_gl_width / (float)g_gl_height;      // aspect ratio
-	proj_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
-
+	proj_mat = glm::ortho(-(float)g_gl_width/2, (float)g_gl_width/2, -(float)g_gl_height/2, (float)g_gl_height/2, -1.0f, 1.0f);
+/*
 	mat4 T = translate (
 		identity_mat4 (), vec3 (-cam_pos.v[0], -cam_pos.v[1], -cam_pos.v[2])
 	);
-	
+	*/
 	// would usually use inverse camera orientation with position to construct
 	// view matrix, but for simplicity since camera axis-aligned, not needed here
-	view_mat =  T; 
+	//view_mat =  T; 
 	
 /*---------------------------SET RENDERING DEFAULTS---------------------------*/
 	// The model matrix stores the position and orientation transformations for your SoR
 
-	model_mat = identity_mat4();
+	model_mat = glm::mat4(1.0f);
 
 
 	// Setup basic GL display attributes.	
@@ -177,7 +178,7 @@ int main (int argc, char *argv[]) {
 		glfwPollEvents ();
 
 		aspect = (float)g_gl_width / (float)g_gl_height; // aspect ratio
-		proj_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);//perspective (fovy, aspect, near, far);
+		proj_mat = glm::ortho(-(float)g_gl_width/2, (float)g_gl_width/2, -(float)g_gl_height/2, (float)g_gl_height/2, -1.0f, 1.0f);//perspective (fovy, aspect, near, far);
 	  
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers (g_window);

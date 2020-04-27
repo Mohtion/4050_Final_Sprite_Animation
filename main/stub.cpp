@@ -24,7 +24,7 @@
 #include "maths_funcs.h"   // Anton's maths functions.
 #include "gl_utils.h"      // Anton's opengl functions and small utilities like logs
 #include "stb_image.h"     // Sean Barrett's image loader with Anton's load_texture()
-
+#include "sprite_renderer.h"
 using namespace std;
 
 #define _USE_MATH_DEFINES
@@ -39,112 +39,12 @@ float user_spec = 0;
 bool spec_on = 1;
 bool texture_on = 0;
 bool diffuse_on = 1;
-typedef struct point{
-	float xyz[3];
-	float norm[3]; //x, y, z
-	float uv[3];
-	
-	point()
-    {}
-} point;
-
-const int triNum = 3;
-
-typedef struct tri{
-	point* v[triNum];
-
-	tri(){};
-} tri;
-
-int size;
-int ySteps = 2, thetaSteps = 2;
-
-vector<point*> curvePoint;
-vector< vector<point*> > surface;
-vector<tri*> tris;
-
-int pointCount;
-
-//make list of tris
-void makeTris (int rows, int cols){
-	//go in circle, then down one row
-	for(int i = 0; i < rows - 1; i++){
-		for(int j = 0; j < cols - 1; j++){
-			int currTri = (i * (cols) + j) * 2;
-			tris[currTri] = new tri();
-			tris[currTri + 1] = new tri();
-			//add points counter clockwise
-			tris[currTri]->v[0] = surface[i][j];
-			tris[currTri]->v[1] = surface[i + 1][(j + 1) % (cols)];
-			tris[currTri]->v[2] = surface[i + 1][j];
-			tris[currTri + 1]->v[0] = surface[i][j];
-			tris[currTri + 1]->v[1] = surface[i][(j + 1) % (cols)];
-			tris[currTri + 1]->v[2] = surface[i + 1][(j + 1) % (cols)];
-		}
-	}
-	//printf("\nerror not makeTris\n"); 
-}
-
-//draw rectangle
-//makes rectangle placed in middle of coordinate system
-void drawRectangle(float width, float height){
-	float numFrames = 4;
-	float halfwidth = width / 2;
-	float halfheight = height / 2;
-	surface[0][0] = new point();
-	surface[0][1] = new point();
-	surface[1][0] = new point();
-	surface[1][1] = new point();
-	surface[0][0]->xyz[0] = halfwidth;
-	surface[0][0]->xyz[1] = halfheight;
-	surface[0][0]->xyz[2] = 0;
-	surface[0][0]->uv[0] = 0 + 1.0 / numFrames;
-	surface[0][0]->uv[1] = 0 + 1.0 / numFrames;
-	surface[0][1]->xyz[0] = -halfwidth;
-	surface[0][1]->xyz[1] = halfheight;
-	surface[0][1]->xyz[2] = 0;
-	surface[0][1]->uv[0] = 0;
-	surface[0][1]->uv[1] = 0 + 1.0 / numFrames;
-	surface[1][0]->xyz[0] = halfwidth;
-	surface[1][0]->xyz[1] = -halfheight;
-	surface[1][0]->xyz[2] = 0;
-	surface[1][0]->uv[0] = 0 + 1.0 / numFrames;
-	surface[1][0]->uv[1] = 0;
-	surface[1][1]->xyz[0] = -halfwidth;
-	surface[1][1]->xyz[1] = -halfheight;
-	surface[1][1]->xyz[2] = 0;
-	surface[1][1]->uv[0] = 0;
-	surface[1][1]->uv[1] = 0;
-}
-//draw tris of surface
-//rows is num of vertex rows
-//cols is num of vertex cols
-void drawSurfaceTris(int rows, int cols){
-	const int numTris = 2;
-	tris = vector<tri*>(numTris);
-	surface = vector< vector<point*> >(rows, vector<point*>(cols));
-	//make surface
-	float width = 400;
-	float height = 400;
-	drawRectangle(width, height);
-	//printf("\nerror not drawingSurface\n");
-	makeTris (rows, cols);
-	/*
-	if(runs == 0){
-			for(int i = 0; i < curvePoint.size(); i++){
-			printf("drawing \n");
-			printf("%f \n",curvePoint[i]->x);
-			}
-			}
-			*/
-	//runs++;
-	//printf("\nfinished drawingSurface %d\n", runs++); 
-}
+SpriteRenderer  *Renderer;
 
 void loadSurfaceOfRevolution() 
 {
 /*------------------------------CREATE GEOMETRY-------------------------------*/
-	drawSurfaceTris(ySteps, thetaSteps);
+	/*drawSurfaceTris(ySteps, thetaSteps);
 	printf("did we make it here\n");
 	size = 2;
 	int numElems = 3 + 2;
@@ -161,7 +61,7 @@ void loadSurfaceOfRevolution()
 			//printf("%f %f %f :: %f %f %f \n", vp[i * 9 + j * 6], vp[i * 9 + j * 6 + 1], vp[i * 9 + j * 6 + 2] , vp[i * 9 + j * 6 + 3], vp[i * 9 + j * 6 + 4], vp[i * 9 + j * 6 + 5]);
 		}
 	}
-	printf("did we make it there\n");
+	printf("did we make it there\n");*/
 /*
 	GLfloat vp[18];
 	//face 1, vertex 1
@@ -191,7 +91,7 @@ void loadSurfaceOfRevolution()
 	vp[17] =  0; //z
 */	
 	
-	// VAO -- vertex attribute objects bundle the various things associated with vertices
+/*	// VAO -- vertex attribute objects bundle the various things associated with vertices
 	GLuint vao;
 	glGenVertexArrays (1, &vao);   // generating and binding is common pattern in OpenGL
 	glBindVertexArray (vao);       // basically setting up memory and associating it
@@ -205,7 +105,7 @@ void loadSurfaceOfRevolution()
 	//position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat), NULL);
+	sizeof(GLfloat), NULL);*/
 /*
 	//normals
 	// Tell OpenGL how to locate the second attribute (texture coordinates) inside the buffer
@@ -222,9 +122,10 @@ void loadSurfaceOfRevolution()
 	// ADD CODE TO POPULATE AND LOAD PER-VERTEX TEXTURE COORDINATES  
 	// [HINT] texture coordinates are organized in same order as that for vertex coordinates
 	// [HINT] there are two texture coordinates instead of three vertex coordinates for each vertex
-	glEnableVertexAttribArray(2);
+/*	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
+	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));*/
+	Renderer = new SpriteRenderer();
 }
 
 
@@ -258,7 +159,7 @@ void loadUniforms(GLuint shader_programme)
 void drawSurfaceOfRevolution()
 {
 	// MODIFY THIS LINE OF CODE APPRORIATELY FOR YOUR SURFACE OF REVOLUTION
-	glDrawArrays(GL_TRIANGLES, 0, 2 * 3 * (3 + 2));
+	Renderer->DrawSprite(glm::vec2(0 + user_light[0], 0 + user_light[1]), glm::vec2(200.0f, 200.0f), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 	
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -269,41 +170,42 @@ void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int
 	// List of Keys: https://www.glfw.org/docs/3.3/group__keys.html
 	
 	//move light
+	float step = 10;
     if (key == GLFW_KEY_A && action == GLFW_PRESS)
     {
 		printf("\nLight -x \n");
-		user_light[0] -= 1;
+		user_light[0] -= step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 
     else if (key == GLFW_KEY_S && action == GLFW_PRESS)
     {
 		printf("\nLight -y\n");
-		user_light[1] -= 1;
+		user_light[1] -= step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS)
     {
 		printf("\nLight +x\n");
-		user_light[0] += 1;
+		user_light[0] += step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
     {
 		printf("\nLight +y\n");
-		user_light[1] += 1;
+		user_light[1] += step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
     {
 		printf("\nLight -z\n");
-		user_light[2] -= 1;
+		user_light[2] -= step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 	else if (key == GLFW_KEY_G && action == GLFW_PRESS)
     {
 		printf("\nLight +z\n");
-		user_light[2] += 1;
+		user_light[2] += step;
         // Example case. Key 'E' pressed. Doing nothing
 	}
 	
