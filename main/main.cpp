@@ -36,7 +36,7 @@
 // The view and proj matrices below make-up the camera position, orientation, fov, etc.
 // The model matrices moves your surface of revolution to the world coordinate system
 extern mat4 view_mat;
-glm::mat4 proj_mat;
+extern glm::mat4 proj_mat;
 extern mat4 model_mat;
 
 // the vector below indicates camra placement. 
@@ -161,8 +161,8 @@ int main (int argc, char *argv[]) {
 
 		// update and draw mesh, rotating the SoR 
 		// set a pace independent of outright rendering speed
-                double rotAmt = -60 * elapsed_seconds; 
-		model_mat = rotate_y_deg(identity_mat4(), rotAmt) * model_mat;
+        //        double rotAmt = -60 * elapsed_seconds; 
+		model_mat =/* rotate_y_deg(identity_mat4(), rotAmt) */ model_mat;
 
 		// load uniform variables for shaders
 		// YOU HAVE TO IMPLEMENT THIS FUNCTION IN stub.cpp	

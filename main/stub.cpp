@@ -14,7 +14,9 @@
 #include <assert.h>
 #include <cmath>
 #include <vector>
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //#include <math.h>
 #include <time.h>
@@ -29,7 +31,7 @@ using namespace std;
 #define ONE_DEG_IN_RAD (2.0 * M_PI) / 360.0 // 0.017444444
 
 mat4 view_mat;
-mat4 proj_mat;
+glm::mat4 proj_mat;
 mat4 model_mat;
 
 float user_light[3] = {0,0,0};
@@ -38,9 +40,9 @@ bool spec_on = 1;
 bool texture_on = 0;
 bool diffuse_on = 1;
 typedef struct point{
-	vector<float> xyz = vector<float>(3, 0);
-	vector<float> norm = vector<float>(3, 0); //x, y, z
-	vector<float> uv = vector<float>(2, 0);
+	float xyz[3];
+	float norm[3]; //x, y, z
+	float uv[3];
 	
 	point()
     {}
@@ -86,20 +88,33 @@ void makeTris (int rows, int cols){
 //draw rectangle
 //makes rectangle placed in middle of coordinate system
 void drawRectangle(float width, float height){
+	float numFrames = 4;
 	float halfwidth = width / 2;
 	float halfheight = height / 2;
+	surface[0][0] = new point();
+	surface[0][1] = new point();
+	surface[1][0] = new point();
+	surface[1][1] = new point();
 	surface[0][0]->xyz[0] = halfwidth;
 	surface[0][0]->xyz[1] = halfheight;
 	surface[0][0]->xyz[2] = 0;
+	surface[0][0]->uv[0] = 0 + 1.0 / numFrames;
+	surface[0][0]->uv[1] = 0 + 1.0 / numFrames;
 	surface[0][1]->xyz[0] = -halfwidth;
 	surface[0][1]->xyz[1] = halfheight;
 	surface[0][1]->xyz[2] = 0;
+	surface[0][1]->uv[0] = 0;
+	surface[0][1]->uv[1] = 0 + 1.0 / numFrames;
 	surface[1][0]->xyz[0] = halfwidth;
 	surface[1][0]->xyz[1] = -halfheight;
 	surface[1][0]->xyz[2] = 0;
+	surface[1][0]->uv[0] = 0 + 1.0 / numFrames;
+	surface[1][0]->uv[1] = 0;
 	surface[1][1]->xyz[0] = -halfwidth;
 	surface[1][1]->xyz[1] = -halfheight;
 	surface[1][1]->xyz[2] = 0;
+	surface[1][1]->uv[0] = 0;
+	surface[1][1]->uv[1] = 0;
 }
 //draw tris of surface
 //rows is num of vertex rows
@@ -208,7 +223,7 @@ void loadSurfaceOfRevolution()
 	// [HINT] texture coordinates are organized in same order as that for vertex coordinates
 	// [HINT] there are two texture coordinates instead of three vertex coordinates for each vertex
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, (numElems) * 
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (numElems) * 
 	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
 }
 
@@ -224,7 +239,7 @@ void loadUniforms(GLuint shader_programme)
 	int proj_mat_location  = glGetUniformLocation (shader_programme, "proj_mat");
 	
 	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view_mat.m);
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, proj_mat.m);
+	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, glm::value_ptr(proj_mat));
 	glUniformMatrix4fv (model_mat_location, 1, GL_FALSE, model_mat.m);
 	
 	// WRITE CODE TO LOAD OTHER UNIFORM VARIABLES LIKE FLAGS FOR ENABLING OR DISABLING CERTAIN FUNCTIONALITIES
