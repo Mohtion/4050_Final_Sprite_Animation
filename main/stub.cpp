@@ -1,3 +1,4 @@
+
 /******************************************************************************|
 | CPSC 4050/6050 Computer Garphics Assignment 5, Daljit Singh Dhillon, 2020    |
 | Reference:                                                                   |
@@ -183,7 +184,6 @@ void loadSurfaceOfRevolution()
    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof (GLfloat), tex1_vp, GL_STATIC_DRAW);
    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
    glEnableVertexAttribArray(2);
-
 }
 
 
@@ -210,39 +210,40 @@ void drawSurfaceOfRevolution()
 
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-   if (key == GLFW_KEY_E && action == GLFW_PRESS)
-   {
-      if(count == 0)
-      {
-         glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-         glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex2_vp);
-         count++;
-      }
-      else if(count == 1)
-      {
-         glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-         glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex3_vp);
-         count++;
-      }
-      else if(count == 2)
-      {
-         glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-         glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex4_vp);
-         count++;
-      }
-      else
-      {
-         glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-         glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
-         count = 0;
-      }
-   }
-
    if (GLFW_PRESS == glfwGetKey (g_window, GLFW_KEY_ESCAPE))
    {
       // Close window when esacape is pressed
       glfwSetWindowShouldClose (g_window, 1);
    }
-
 }
+
+void updateSprite()
+{
+
+   if(count == 0)
+   {
+      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex2_vp);
+      count++;
+   }
+   else if(count == 1)
+   {
+      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex3_vp);
+      count++;
+   }
+   else if(count == 2)
+   {
+      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex4_vp);
+      count++;
+   }
+   else
+   {
+      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+      count = 0;
+   }
+}
+
 

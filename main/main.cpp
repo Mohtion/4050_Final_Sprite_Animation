@@ -46,6 +46,7 @@ void loadSurfaceOfRevolution();
 void loadUniforms(GLuint shader_programme);
 void drawSurfaceOfRevolution();
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods);
+void updateSprite();
 
 // Forward Declaration
 // this function loads a .jpg or .png file into a previously activated texture map
@@ -135,10 +136,10 @@ int main (int argc, char *argv[]) {
 /*-------------------------------RENDERING LOOP-------------------------------*/
         while (!glfwWindowShouldClose (g_window)) {
                 // update timers
-//              static double previous_seconds = glfwGetTime ();
-//              double current_seconds = glfwGetTime ();
-//              double elapsed_seconds = current_seconds - previous_seconds;
-//              previous_seconds = current_seconds;
+                static double previous_seconds = glfwGetTime ();
+                double current_seconds = glfwGetTime ();
+                double elapsed_seconds = current_seconds - previous_seconds;
+                previous_seconds = current_seconds;
                 _update_fps_counter (g_window);
 
                 // clear graphics context
@@ -147,10 +148,11 @@ int main (int argc, char *argv[]) {
                 // setup shader use
                 glUseProgram (shader_programme);
 
+
+                updateSprite();
                 // load uniform variables for shaders
                 // YOU HAVE TO IMPLEMENT THIS FUNCTION IN stub.cpp
                 loadUniforms(shader_programme);
-
 
                 // The following function will actually draw your previously dispatched/loaded Surface of Revolution
                 drawSurfaceOfRevolution();
@@ -226,4 +228,6 @@ bool load_texture (const char* file_name, GLuint* tex) {
         glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
         return true;
 }
+
+
 
