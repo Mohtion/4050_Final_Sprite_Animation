@@ -25,6 +25,9 @@ GLuint texture1_vbo;
 int pointCount;
 
 int count = 0;
+int running = 1;
+int speed = 50;
+int count2 = 50;
 
 void loadSurfaceOfRevolution()
 {
@@ -125,53 +128,103 @@ void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int
       // Close window when esacape is pressed
       glfwSetWindowShouldClose (g_window, 1);
    }
+
+   if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+   {
+      if(running == 0)
+      {
+         running = 1;
+      }
+      else
+      {
+         running = 0;
+      }
+   }
+
+   if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+   {
+      if(speed >= 10)
+      {
+         speed-=5;
+      }
+   }
+
+   if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+   {
+      if(speed <= 45)
+      {
+         speed+=5;
+      }
+   }
+
+   if (key == GLFW_KEY_R && action == GLFW_PRESS)
+   {
+      speed = 50;
+   }
 }
 
 
 void updateSprite(float frames)
 {
-   float left_bound;
-   float right_bound;
-
-   if(count == 0)
+   if(running == 1)
    {
-      left_bound = 0;
-      right_bound = 1/frames;
-   }
-   else
-   {
-      left_bound = count / frames;
-      right_bound = (count+1)/frames;
-   }
 
-   tex1_vp[0] = left_bound;
-   tex1_vp[1] = 0;
+      if(count2 == speed)
+      {
+         float left_bound;
+         float right_bound;
 
-   tex1_vp[3] = right_bound;
-   tex1_vp[4] = 0;
+         if(count == 0)
+         {
+            left_bound = 0;
+            right_bound = 1/frames;
+         }
+         else
+         {
+            left_bound = count / frames;
+            right_bound = (count+1)/frames;
+         }
 
-   tex1_vp[6] = left_bound;
-   tex1_vp[7] = 1;
+         tex1_vp[0] = left_bound;
+         tex1_vp[1] = 0;
 
-   tex1_vp[9] = left_bound;
-   tex1_vp[10] = 1;
+         tex1_vp[3] = right_bound;
+         tex1_vp[4] = 0;
 
-   tex1_vp[12] = right_bound;
-   tex1_vp[13] = 0;
+         tex1_vp[6] = left_bound;
+         tex1_vp[7] = 1;
 
-   tex1_vp[15] = right_bound;
-   tex1_vp[16] = 1;
+         tex1_vp[9] = left_bound;
+         tex1_vp[10] = 1;
 
-   glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-   glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+         tex1_vp[12] = right_bound;
+         tex1_vp[13] = 0;
 
-   if(count == 3)
-   {
-      count = 0;
-   }
-   else
-   {
-      count++;
+         tex1_vp[15] = right_bound;
+         tex1_vp[16] = 1;
+
+         glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+         glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+
+         if(count == 3)
+         {
+            count = 0;
+         }
+         else
+         {
+            count++;
+         }
+
+         count2 = 0;
+      }
+      else
+      {
+         count2++;
+      }
    }
 }
+
+
+
+
 
