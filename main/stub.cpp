@@ -220,25 +220,31 @@ void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int
 void updateSprite()
 {
 
-   if(count == 0)
+   if(count <= 50)
    {
       glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
       glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex2_vp);
       count++;
    }
-   else if(count == 1)
+   else if(count > 50 && count <= 100)
    {
       glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
       glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex3_vp);
       count++;
    }
-   else if(count == 2)
+   else if(count > 100 && count <= 150)
    {
       glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
       glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex4_vp);
       count++;
    }
-   else
+   else if(count > 150 && count < 200)
+   {
+      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+      count++;
+   }
+   else if(count == 200)
    {
       glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
       glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
