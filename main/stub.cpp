@@ -1,39 +1,24 @@
-/******************************************************************************|
-| CPSC 4050/6050 Computer Garphics Assignment 5, Daljit Singh Dhillon, 2020    |
-| Reference:                                                                   |
-|                                                                              |
-| Some OpenGL setup code here including math_funcs, and gl_utils               |
-| are from Angton Gerdelan and "Anton's OpenGL 4 Tutorials."                   |
-| http://antongerdelan.net/opengl/                                             |
-| Email: anton at antongerdelan dot net                                        |
-| Copyright Dr Anton Gerdelan, Trinity College Dublin, Ireland.                |
-|******************************************************************************/
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <cmath>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
-//#include <math.h>
+#include <math.h>
 #include <time.h>
 
 #include "maths_funcs.h"   // Anton's maths functions.
 #include "gl_utils.h"      // Anton's opengl functions and small utilities like logs
 #include "stb_image.h"     // Sean Barrett's image loader with Anton's load_texture()
-#include "sprite_renderer.h"
-using namespace std;
 
 #define _USE_MATH_DEFINES
 #define ONE_DEG_IN_RAD (2.0 * M_PI) / 360.0 // 0.017444444
 
 mat4 view_mat;
-glm::mat4 proj_mat;
+mat4 proj_mat;
 mat4 model_mat;
 
+<<<<<<< HEAD
 float user_light[3] = {0,0,0};
 float user_spec = 0;
 bool spec_on = 1;
@@ -41,142 +26,166 @@ bool texture_on = 0;
 bool diffuse_on = 1;
 
 SpriteRenderer  *Renderer;
+=======
+GLfloat tex1_vp[18];
+>>>>>>> f16334a2d8180580581c70a4d97b5afb81016459
 
-void loadSurfaceOfRevolution() 
+GLuint texture1_vbo;
+
+int pointCount;
+
+int count = 0;
+
+void loadSurfaceOfRevolution()
 {
+<<<<<<< HEAD
 	Renderer = new SpriteRenderer();
+=======
+/*------------------------------CREATE GEOMETRY-------------------------------*/
+   GLfloat vp[18];
+
+   vp[0] = -1;
+   vp[1] = -1;
+   vp[2] = 0;
+
+   vp[3] = 1;
+   vp[4] = -1;
+   vp[5] = 0;
+
+   vp[6] = -1;
+   vp[7] = 1;
+   vp[8] = 0;
+
+   vp[9] = -1;
+   vp[10] = 1;
+   vp[11] = 0;
+
+   vp[12] = 1;
+   vp[13] = -1;
+   vp[14] = 0;
+
+   vp[15] = 1;
+   vp[16] = 1;
+   vp[17] = 0;
+
+
+   GLfloat norm_vp[18];
+
+   for(int n = 0; n < 18; n+=3)
+   {
+      norm_vp[n] = vp[n];
+      norm_vp[n+1] = vp[n+1];
+      norm_vp[n+2] = vp[n+2];
+   }
+
+   // VAO -- vertex attribute objects bundle the various things associated with vertices
+   GLuint vao;
+   glGenVertexArrays (1, &vao);
+   glBindVertexArray (vao);
+
+   // VBO -- vertex buffer object to contain coordinates
+   GLuint points_vbo;
+   glGenBuffers(1, &points_vbo);
+   glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+   glBufferData(GL_ARRAY_BUFFER, 18 * sizeof (GLfloat), vp, GL_STATIC_DRAW);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+   glEnableVertexAttribArray(0);
+
+
+   // VBO -- normals -- needed for shading calcuations
+   GLuint normals_vbo;
+   glGenBuffers(1, &normals_vbo);
+   glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
+   glBufferData(GL_ARRAY_BUFFER, 18 * sizeof (GLfloat), norm_vp, GL_STATIC_DRAW);
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+   glEnableVertexAttribArray(1);
+
+
+   // VBO -- vt -- texture coordinates
+   glGenBuffers(1, &texture1_vbo);
+   glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+   glBufferData(GL_ARRAY_BUFFER, 18 * sizeof (GLfloat), tex1_vp, GL_STATIC_DRAW);
+   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+   glEnableVertexAttribArray(2);
+>>>>>>> f16334a2d8180580581c70a4d97b5afb81016459
 }
 
 
-	
+
 void loadUniforms(GLuint shader_programme)
-{	
-/*---------------------------SET RENDERING DEFAULTS---------------------------*/
+{
 
-	// Choose vertex and fragment shaders to use as well as view and proj matrices.
-	int model_mat_location = glGetUniformLocation (shader_programme, "model_mat");
-	int view_mat_location  = glGetUniformLocation (shader_programme, "view_mat");
-	int proj_mat_location  = glGetUniformLocation (shader_programme, "proj_mat");
-	
-	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view_mat.m);
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, glm::value_ptr(proj_mat));
-	glUniformMatrix4fv (model_mat_location, 1, GL_FALSE, model_mat.m);
-	
-	// WRITE CODE TO LOAD OTHER UNIFORM VARIABLES LIKE FLAGS FOR ENABLING OR DISABLING CERTAIN FUNCTIONALITIES
-	int user_spec_location  = glGetUniformLocation (shader_programme, "user_spec");
-	glUniform1f (user_spec_location, user_spec);
-	int user_light_location  = glGetUniformLocation (shader_programme, "user_light");
-	glUniform3fv (user_light_location, 1, user_light);
-	int spec_on_location  = glGetUniformLocation (shader_programme, "spec_on");
-	glUniform1i (spec_on_location, spec_on);
-	int texture_on_location  = glGetUniformLocation (shader_programme, "texture_on");
-	glUniform1i (texture_on_location, texture_on);
-	int diffuse_on_location  = glGetUniformLocation (shader_programme, "diffuse_on");
-	glUniform1i (diffuse_on_location, diffuse_on);
+   int model_mat_location = glGetUniformLocation (shader_programme, "model_mat");
+   int view_mat_location  = glGetUniformLocation (shader_programme, "view_mat");
+   int proj_mat_location  = glGetUniformLocation (shader_programme, "proj_mat");
+
+   glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view_mat.m);
+   glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, proj_mat.m);
+   glUniformMatrix4fv (model_mat_location, 1, GL_FALSE, model_mat.m);
+
 }
+
 
 void drawSurfaceOfRevolution()
 {
-	// MODIFY THIS LINE OF CODE APPRORIATELY FOR YOUR SURFACE OF REVOLUTION
-	Renderer->DrawSprite(glm::vec2(0 + user_light[0], 0 + user_light[1]), glm::vec2(200.0f, 200.0f), 0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+   glDrawArrays(GL_TRIANGLES, 0, 18);
 }
-	
+
+
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// MODIFY THIS FUNCTION FOR KEYBOARD INTERACTIVITY
-	//GLFW Reference Links:
-	// Callback Example: https://www.glfw.org/docs/3.3/input_guide.html#input_key
-	// List of Keys: https://www.glfw.org/docs/3.3/group__keys.html
-	
-	//move light
-	float step = 10;
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
-    {
-		printf("\nLight -x \n");
-		user_light[0] -= step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-
-    else if (key == GLFW_KEY_S && action == GLFW_PRESS)
-    {
-		printf("\nLight -y\n");
-		user_light[1] -= step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-	else if (key == GLFW_KEY_D && action == GLFW_PRESS)
-    {
-		printf("\nLight +x\n");
-		user_light[0] += step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
-    {
-		printf("\nLight +y\n");
-		user_light[1] += step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
-    {
-		printf("\nLight -z\n");
-		user_light[2] -= step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-	else if (key == GLFW_KEY_G && action == GLFW_PRESS)
-    {
-		printf("\nLight +z\n");
-		user_light[2] += step;
-        // Example case. Key 'E' pressed. Doing nothing
-	}
-	
-	//togglers
-	if (key == GLFW_KEY_J && action == GLFW_PRESS)
-    {
-		if(spec_on){
-			spec_on = 0;
-			printf("\nspecular shading off\n");
-		}
-		else{
-			spec_on = 1;
-			printf("\nspecular shading on\n");
-		}
-	}
-	else if (key == GLFW_KEY_K && action == GLFW_PRESS)
-    {
-		if(texture_on){
-			texture_on = 0;
-			printf("\ntexture albedo off\n");
-		}
-		else{
-			texture_on = 1;
-			printf("\ntexture albedo on\n");
-		}
-	} 
-	else if (key == GLFW_KEY_L && action == GLFW_PRESS)
-    {
-		if(diffuse_on){
-			diffuse_on = 0;
-			printf("\ndiffuse shading off\n");
-		}
-		else{
-			diffuse_on = 1;
-			printf("\ndiffuse shading on\n");
-		}
-	} 
-
-	//change specular exponent
-	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
-    {
-		user_spec -= 2;
-		printf("\nspecular exponent -2\n");
-	} 
-	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-    {
-		user_spec += 2;
-		printf("\nspecular exponent +2\n");
-	} 
-	if (GLFW_PRESS == glfwGetKey (g_window, GLFW_KEY_ESCAPE)) {
-		// Close window when esacape is pressed
-			glfwSetWindowShouldClose (g_window, 1);
-	}
-
+   if (GLFW_PRESS == glfwGetKey (g_window, GLFW_KEY_ESCAPE))
+   {
+      // Close window when esacape is pressed
+      glfwSetWindowShouldClose (g_window, 1);
+   }
 }
+
+
+void updateSprite(float frames)
+{
+   float left_bound;
+   float right_bound;
+
+   if(count == 0)
+   {
+      left_bound = 0;
+      right_bound = 1/frames;
+   }
+   else
+   {
+      left_bound = count / frames;
+      right_bound = (count+1)/frames;
+   }
+
+   tex1_vp[0] = left_bound;
+   tex1_vp[1] = 0;
+
+   tex1_vp[3] = right_bound;
+   tex1_vp[4] = 0;
+
+   tex1_vp[6] = left_bound;
+   tex1_vp[7] = 1;
+
+   tex1_vp[9] = left_bound;
+   tex1_vp[10] = 1;
+
+   tex1_vp[12] = right_bound;
+   tex1_vp[13] = 0;
+
+   tex1_vp[15] = right_bound;
+   tex1_vp[16] = 1;
+
+   glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+   glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+
+   if(count == 3)
+   {
+      count = 0;
+   }
+   else
+   {
+      count++;
+   }
+}
+
