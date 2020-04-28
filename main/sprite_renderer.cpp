@@ -12,7 +12,6 @@ vector<point*> curvePoint;
 vector< vector<point*> > surface;
 vector<tri*> tris;
 
-int pointCount;
 
 //make list of tris
 void makeTris (int rows, int cols){

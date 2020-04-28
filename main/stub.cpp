@@ -18,17 +18,7 @@ mat4 view_mat;
 mat4 proj_mat;
 mat4 model_mat;
 
-<<<<<<< HEAD
-float user_light[3] = {0,0,0};
-float user_spec = 0;
-bool spec_on = 1;
-bool texture_on = 0;
-bool diffuse_on = 1;
-
-SpriteRenderer  *Renderer;
-=======
 GLfloat tex1_vp[18];
->>>>>>> f16334a2d8180580581c70a4d97b5afb81016459
 
 GLuint texture1_vbo;
 
@@ -38,9 +28,6 @@ int count = 0;
 
 void loadSurfaceOfRevolution()
 {
-<<<<<<< HEAD
-	Renderer = new SpriteRenderer();
-=======
 /*------------------------------CREATE GEOMETRY-------------------------------*/
    GLfloat vp[18];
 
@@ -107,7 +94,6 @@ void loadSurfaceOfRevolution()
    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof (GLfloat), tex1_vp, GL_STATIC_DRAW);
    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
    glEnableVertexAttribArray(2);
->>>>>>> f16334a2d8180580581c70a4d97b5afb81016459
 }
 
 
