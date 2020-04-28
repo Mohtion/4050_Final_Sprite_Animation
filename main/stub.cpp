@@ -1,14 +1,3 @@
-
-/******************************************************************************|
-| CPSC 4050/6050 Computer Garphics Assignment 5, Daljit Singh Dhillon, 2020    |
-| Reference:                                                                   |
-|                                                                              |
-| Some OpenGL setup code here including math_funcs, and gl_utils               |
-| are from Angton Gerdelan and "Anton's OpenGL 4 Tutorials."                   |
-| http://antongerdelan.net/opengl/                                             |
-| Email: anton at antongerdelan dot net                                        |
-| Copyright Dr Anton Gerdelan, Trinity College Dublin, Ireland.                |
-|******************************************************************************/
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
@@ -29,7 +18,7 @@ mat4 view_mat;
 mat4 proj_mat;
 mat4 model_mat;
 
-GLfloat tex1_vp[18], tex2_vp[18], tex3_vp[18], tex4_vp[18];
+GLfloat tex1_vp[18];
 
 GLuint texture1_vbo;
 
@@ -75,85 +64,6 @@ void loadSurfaceOfRevolution()
       norm_vp[n+1] = vp[n+1];
       norm_vp[n+2] = vp[n+2];
    }
-
-   tex1_vp[0] = 0;
-   tex1_vp[1] = 0;
-
-   tex1_vp[3] = .25;
-   tex1_vp[4] = 0;
-
-   tex1_vp[6] = 0;
-   tex1_vp[7] = 1;
-
-   tex1_vp[9] = 0;
-   tex1_vp[10] = 1;
-
-   tex1_vp[12] = .25;
-   tex1_vp[13] = 0;
-
-   tex1_vp[15] = .25;
-   tex1_vp[16] = 1;
-
-
-
-   tex2_vp[0] = .25;
-   tex2_vp[1] = 0;
-
-   tex2_vp[3] = .5;
-   tex2_vp[4] = 0;
-
-   tex2_vp[6] = .25;
-   tex2_vp[7] = 1;
-
-   tex2_vp[9] = .25;
-   tex2_vp[10] = 1;
-
-   tex2_vp[12] = .5;
-   tex2_vp[13] = 0;
-
-   tex2_vp[15] = .5;
-   tex2_vp[16] = 1;
-
-
-
-   tex3_vp[0] = .5;
-   tex3_vp[1] = 0;
-
-   tex3_vp[3] = .75;
-   tex3_vp[4] = 0;
-
-   tex3_vp[6] = .5;
-   tex3_vp[7] = 1;
-
-   tex3_vp[9] = .5;
-   tex3_vp[10] = 1;
-
-   tex3_vp[12] = .75;
-   tex3_vp[13] = 0;
-
-   tex3_vp[15] = .75;
-   tex3_vp[16] = 1;
-
-
-
-   tex4_vp[0] = .75;
-   tex4_vp[1] = 0;
-
-   tex4_vp[3] = 1;
-   tex4_vp[4] = 0;
-
-   tex4_vp[6] = .75;
-   tex4_vp[7] = 1;
-
-   tex4_vp[9] = .75;
-   tex4_vp[10] = 1;
-
-   tex4_vp[12] = 1;
-   tex4_vp[13] = 0;
-
-   tex4_vp[15] = 1;
-   tex4_vp[16] = 1;
-
 
    // VAO -- vertex attribute objects bundle the various things associated with vertices
    GLuint vao;
@@ -217,39 +127,51 @@ void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int
    }
 }
 
-void updateSprite()
-{
 
-   if(count <= 50)
+void updateSprite(float frames)
+{
+   float left_bound;
+   float right_bound;
+
+   if(count == 0)
    {
-      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex2_vp);
-      count++;
+      left_bound = 0;
+      right_bound = 1/frames;
    }
-   else if(count > 50 && count <= 100)
+   else
    {
-      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex3_vp);
-      count++;
+      left_bound = count / frames;
+      right_bound = (count+1)/frames;
    }
-   else if(count > 100 && count <= 150)
+
+   tex1_vp[0] = left_bound;
+   tex1_vp[1] = 0;
+
+   tex1_vp[3] = right_bound;
+   tex1_vp[4] = 0;
+
+   tex1_vp[6] = left_bound;
+   tex1_vp[7] = 1;
+
+   tex1_vp[9] = left_bound;
+   tex1_vp[10] = 1;
+
+   tex1_vp[12] = right_bound;
+   tex1_vp[13] = 0;
+
+   tex1_vp[15] = right_bound;
+   tex1_vp[16] = 1;
+
+   glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
+   glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
+
+   if(count == 3)
    {
-      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex4_vp);
-      count++;
-   }
-   else if(count > 150 && count < 200)
-   {
-      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
-      count++;
-   }
-   else if(count == 200)
-   {
-      glBindBuffer(GL_ARRAY_BUFFER, texture1_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof (GLfloat), tex1_vp);
       count = 0;
    }
+   else
+   {
+      count++;
+   }
 }
-
 

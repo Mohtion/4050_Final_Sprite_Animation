@@ -1,17 +1,3 @@
-/******************************************************************************|
-| CPSC 4050/6050 Computer Garphics Assignment 5, Daljit Singh Dhillon, 2020    |
-| Modified from:                                                               |
-|                                                                              |
-| DPA 8090 Example Code, Eric Patterson, 2017                                  |
-|                                                                              |
-| This is mostly plain C but uses a few things from C++ so needs C++ compiler. |
-| Some OpenGL setup code here and obj_parser, math_funcs, and gl_utils         |
-| are from Angton Gerdelan and "Anton's OpenGL 4 Tutorials."                   |
-| http://antongerdelan.net/opengl/                                             |
-| Email: anton at antongerdelan dot net                                        |
-| Copyright Dr Anton Gerdelan, Trinity College Dublin, Ireland.                |
-|******************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -46,12 +32,13 @@ void loadSurfaceOfRevolution();
 void loadUniforms(GLuint shader_programme);
 void drawSurfaceOfRevolution();
 void keyboardFunction(GLFWwindow* window, int key, int scancode, int action, int mods);
-void updateSprite();
+void updateSprite(float frames);
 
 // Forward Declaration
 // this function loads a .jpg or .png file into a previously activated texture map
 bool load_texture (const char* file_name, GLuint* tex);
 
+int counter = 0;
 
 /******************************************************************************|
 | argc: number of input command-line parameters                                |
@@ -66,9 +53,9 @@ bool load_texture (const char* file_name, GLuint* tex);
 |******************************************************************************/
 
 int main (int argc, char *argv[]) {
-        if (argc < 4)
+        if (argc < 5)
         {
-                printf("\nEnter atleast 3 filenames to run this program: (1) vtx_shader, (2) frag_shader, (3) texture_1\n");
+                printf("\nEnter 4 arguments to run this program: (1) vtx_shader, (2) frag_shader, (3) sprite_sheet, (4) number_of_frames\n");
                 printf("\nQuiting now...\n");
 
                 return 0;
@@ -135,11 +122,6 @@ int main (int argc, char *argv[]) {
 
 /*-------------------------------RENDERING LOOP-------------------------------*/
         while (!glfwWindowShouldClose (g_window)) {
-                // update timers
-                static double previous_seconds = glfwGetTime ();
-                double current_seconds = glfwGetTime ();
-                double elapsed_seconds = current_seconds - previous_seconds;
-                previous_seconds = current_seconds;
                 _update_fps_counter (g_window);
 
                 // clear graphics context
@@ -148,8 +130,19 @@ int main (int argc, char *argv[]) {
                 // setup shader use
                 glUseProgram (shader_programme);
 
-
-                updateSprite();
+                if(counter == 0)
+                {
+                   updateSprite(atof(argv[4]));
+                   counter++;
+                }
+                else if(counter > 0 && counter < 50)
+                {
+                   counter++;
+                }
+                else if(counter == 50)
+                {
+                   counter = 0;
+                }
                 // load uniform variables for shaders
                 // YOU HAVE TO IMPLEMENT THIS FUNCTION IN stub.cpp
                 loadUniforms(shader_programme);
@@ -228,6 +221,5 @@ bool load_texture (const char* file_name, GLuint* tex) {
         glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
         return true;
 }
-
 
 
