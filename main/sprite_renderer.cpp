@@ -37,7 +37,7 @@ void makeTris (int rows, int cols){
 //draw rectangle
 //makes rectangle placed in middle of coordinate system
 void drawRectangle(float width, float height){
-	float numFrames = 1;
+	float numFrames = 100;
 	//float halfwidth = width / 2;
 	//float halfheight = height / 2;
 	surface[0][0] = new point();
@@ -98,7 +98,6 @@ void SpriteRenderer::initRenderData()
 	int numElems = 3 + 2;
 	//int numAttribs = 2;
 	GLfloat *vp = new GLfloat[size * 3 * (numElems)];    // array of vertex points and normals
-	//GLfloat *vn = new GLfloat[size * 9 * numAttribs];    // array of vertex normals
 	for(int i = 0; i < size; i++){
 		for(int j = 0; j < 3; j++){
 			vp[i * 15 + j * 5] = tris[i]->v[j]->xyz[0];
@@ -108,10 +107,10 @@ void SpriteRenderer::initRenderData()
 			vp[i * 15 + j * 5 + 4] = tris[i]->v[j]->uv[1];
 			printf("%f %f %f :: %f %f \n", 
                 vp[i * 15 + j * 5], 
-                vp[i * 15 + j * 5+ 1], 
-                vp[i * 15 + j * 5+ 2] , 
-                vp[i * 15 + j * 5+ 3], 
-                vp[i * 15 + j * 5+ 4]);
+                vp[i * 15 + j * 5 + 1], 
+                vp[i * 15 + j * 5 + 2], 
+                vp[i * 15 + j * 5 + 3], 
+                vp[i * 15 + j * 5 + 4]);
 		}
 	}
 	printf("did we make it there\n");
@@ -126,7 +125,7 @@ void SpriteRenderer::initRenderData()
 	GLuint points_vbo;
 	glGenBuffers(1, &points_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, size * 3 * (3 + 2) * sizeof (float), vp, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * 3 * (numElems) * sizeof (float), vp, GL_STATIC_DRAW);
 	//position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (numElems) * 
@@ -136,7 +135,7 @@ void SpriteRenderer::initRenderData()
 	// ADD CODE TO POPULATE AND LOAD PER-VERTEX TEXTURE COORDINATES  
 	// [HINT] texture coordinates are organized in same order as that for vertex coordinates
 	// [HINT] there are two texture coordinates instead of three vertex coordinates for each vertex
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (numElems) * 
 	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
 }

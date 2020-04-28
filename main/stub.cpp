@@ -39,92 +39,11 @@ float user_spec = 0;
 bool spec_on = 1;
 bool texture_on = 0;
 bool diffuse_on = 1;
+
 SpriteRenderer  *Renderer;
 
 void loadSurfaceOfRevolution() 
 {
-/*------------------------------CREATE GEOMETRY-------------------------------*/
-	/*drawSurfaceTris(ySteps, thetaSteps);
-	printf("did we make it here\n");
-	size = 2;
-	int numElems = 3 + 2;
-	//int numAttribs = 2;
-	GLfloat *vp = new GLfloat[size * 3 * (numElems)];    // array of vertex points and normals
-	//GLfloat *vn = new GLfloat[size * 9 * numAttribs];    // array of vertex normals
-	for(int i = 0; i < size; i++){
-		for(int j = 0; j < 3; j++){
-			vp[i * 15 + j * 5] = tris[i]->v[j]->xyz[0];
-			vp[i * 15 + j * 5 + 1] = tris[i]->v[j]->xyz[1];
-			vp[i * 15 + j * 5 + 2] = tris[i]->v[j]->xyz[2];
-			vp[i * 15 + j * 5 + 3] = tris[i]->v[j]->uv[0];
-			vp[i * 15 + j * 5 + 4] = tris[i]->v[j]->uv[1];
-			//printf("%f %f %f :: %f %f %f \n", vp[i * 9 + j * 6], vp[i * 9 + j * 6 + 1], vp[i * 9 + j * 6 + 2] , vp[i * 9 + j * 6 + 3], vp[i * 9 + j * 6 + 4], vp[i * 9 + j * 6 + 5]);
-		}
-	}
-	printf("did we make it there\n");*/
-/*
-	GLfloat vp[18];
-	//face 1, vertex 1
-	vp[0] = -.1; //x
-	vp[1] = -.1; //y
-	vp[2] = 0; //z
-	//face 1, vertex 2
-	vp[3] = .1; //x
-	vp[4] = -.1; //y
-	vp[5] = 0; //z
-	//face 1, vertex 3
-	vp[6] = -.1; //x
-	vp[7] =  .1; //y
-	vp[8] =  0; //z
-	
-	//face 2, vertex 1
-	vp[ 9] = -1; //x
-	vp[10] =  1; //y
-	vp[11] = 0; //z
-	//face 2, vertex 2
-	vp[12] =  1; //x
-	vp[13] = -1; //y
-	vp[14] = 0; //z
-	//face 2, vertex 3
-	vp[15] =  1; //x
-	vp[16] =  1; //y
-	vp[17] =  0; //z
-*/	
-	
-/*	// VAO -- vertex attribute objects bundle the various things associated with vertices
-	GLuint vao;
-	glGenVertexArrays (1, &vao);   // generating and binding is common pattern in OpenGL
-	glBindVertexArray (vao);       // basically setting up memory and associating it
-
-	// VBO -- vertex buffer object to contain coordinates
-	// MODIFY THE FOLLOWING BLOCK OF CODE APPRORIATELY FOR YOUR SURFACE OF REVOLUTION
-	GLuint points_vbo;
-	glGenBuffers(1, &points_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, size * 3 * (3 + 2) * sizeof (float), vp, GL_STATIC_DRAW);
-	//position
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat), NULL);*/
-/*
-	//normals
-	// Tell OpenGL how to locate the second attribute (texture coordinates) inside the buffer
-	
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));
-*/	
-	// VBO -- normals -- needed for shading calcuations
-	// ADD CODE TO POPULATE AND LOAD PER-VERTEX SURFACE NORMALS  
-	// [HINT] Vertex normals are organized in same order as that for vertex coordinates
-
-    // VBO -- vt -- texture coordinates
-	// ADD CODE TO POPULATE AND LOAD PER-VERTEX TEXTURE COORDINATES  
-	// [HINT] texture coordinates are organized in same order as that for vertex coordinates
-	// [HINT] there are two texture coordinates instead of three vertex coordinates for each vertex
-/*	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, (numElems) * 
-	sizeof(GLfloat),(void*)(3 * sizeof(GLfloat)));*/
 	Renderer = new SpriteRenderer();
 }
 
