@@ -121,28 +121,29 @@ int main (int argc, char *argv[]) {
         glViewport (0, 0, g_gl_width, g_gl_height); // make sure correct aspect ratio
 
 /*-------------------------------RENDERING LOOP-------------------------------*/
-        while (!glfwWindowShouldClose (g_window)) {
-                _update_fps_counter (g_window);
+        //for controlling framerate
+		//clock_t curr_time = clock();
+		clock_t curr_time = clock();
+		clock_t last_time = curr_time;
+		while (!glfwWindowShouldClose (g_window)) { 
+				_update_fps_counter (g_window);
+                int framerate = 6;
+				//update time
+				clock_t curr_time = clock();
 
+				double time_diff = (double)(curr_time - last_time);
                 // clear graphics context
                 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 // setup shader use
                 glUseProgram (shader_programme);
-
-                if(counter == 0)
-                {
-                   updateSprite(atof(argv[4]));
-                   counter++;
-                }
-                else if(counter > 0 && counter < 50)
-                {
-                   counter++;
-                }
-                else if(counter == 50)
-                {
-                   counter = 0;
-                }
+				//if time crosses frame threshold, update
+				if(time_diff >= (double)(CLOCKS_PER_SEC / framerate) || counter == 0)
+				{
+					last_time = curr_time;
+					updateSprite(atof(argv[4]));
+					counter = 1;
+				}
                 // load uniform variables for shaders
                 // YOU HAVE TO IMPLEMENT THIS FUNCTION IN stub.cpp
                 loadUniforms(shader_programme);
